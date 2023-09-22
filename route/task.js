@@ -7,23 +7,22 @@ const router = Router()
 
 router.get(
     "/:userId",
-    tokenAuth,
     taskController.getUserTask
 )
 
 router.post(
     "/:userId/new",
-    tokenAuth,
     [
-        body("title").trim().notEmpty().withMessage("task can not be an empty named")
+        body("title").trim().not().isEmpty().withMessage("task can not be an empty named")
     ],
+    tokenAuth,
     taskController.newUserTask
 )
 
 router.patch(
     "/:taskId/patch",
     [
-        body("title").trim().notEmpty().withMessage("task can not an empty named")
+        body("title").trim().not().isEmpty().withMessage("task can not an empty named")
     ],  
     tokenAuth,
     taskController.editTask

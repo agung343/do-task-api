@@ -7,13 +7,14 @@ import User from "../model/user.js";
 export const getUserTask = async(req, res, next) => {
     try {
         const {userId} = req.params
-        const userObjId = req.userId
-        console.log(userObjId)
+
+        const user = await User.findById(userId)
         
         const tasks = await Task.find({user: userId})
         
         res.status(200).json({
-            tasks: tasks
+            tasks: tasks,
+            user: user.name.firstName
         })
     } catch (error) {
         if(!(error instanceof CustomError)) {
@@ -32,17 +33,17 @@ export const newUserTask = async(req, res, next) => {
 
     try {
         const {userId} = req.params;
-        const userObjId = req.userId
+        const tokenUserId = req.userId
 
-        const title = req.body.title
+        const {title} = req.body
 
         const newTask = new Task({
             title: title,
             status: "PENDING",
-            user: userObjId
+            user: userId
         })
 
-        const task = newTask.save()
+        const task = await newTask.save()
 
         const user = await User.findById(userId)
         if (user) {
@@ -53,7 +54,7 @@ export const newUserTask = async(req, res, next) => {
         res.status(201).json({
             message: "new task created",
             task: task,
-            user: user._id
+            user: tokenUserId
         })
     } catch (error) {
         if (!(error instanceof CustomError)) {
@@ -73,7 +74,7 @@ export const editTask = async(req, res, next) => {
 
     try {
         const taskId = req.params
-        const userObjId = req.userId
+        const tokeUserId = req.userId
 
         let {title, status} = req.body
         const task = await Task.findById(taskId)
@@ -106,7 +107,7 @@ export const editTask = async(req, res, next) => {
 export const deleteTask = async (req, res, next) => {
     try {
         const {taskId} = req.params
-        const userObjId = req.userId
+        const tokenUserId = req.userId
 
         const deleted = await Task.findByIdAndDelete(taskId)
         if (!deleted) {
@@ -134,8 +135,3 @@ export const deleteTask = async (req, res, next) => {
     }
 }
 
-// /**
-//  * @param {import('express').Request} req
-//  * @param {import('express').Response} res
-//  * @param {import('express').NextFunction} next
-//  */

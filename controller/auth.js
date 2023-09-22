@@ -37,7 +37,7 @@ export const signup = async (req, res, next) => {
             message: "created new user",
             user: {
                 _id: user._id,
-                name: user.name
+                name: user.name.firstName
             }
         })
     } catch (error) {
